@@ -1,0 +1,144 @@
+// Prisma schema — Technical Digital Library V1
+//
+// PROVIDER NOTE:
+// V1 ships with SQLite so the whole app can run from a single file.
+// Migration path to PostgreSQL later:
+//   1. change provider to "postgresql"
+//   2. set DATABASE_URL to the Postgres URL
+//   3. prisma migrate dev --name init_postgres  (regenerates the migration)
+//   4. prisma migrate deploy on the target server
+// The schema below is written to be ANSI-SQL friendly: cuid ids (no SERIAL),
+// no SQLite-specific types, no ENUMs (plain strings with comments listing allowed values).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Represents a folder or a file inside the archive.
+/// The archive lives on disk outside the repo (ARCHIVE_ROOT env var).
+/// Only metadata + a safe `relativePath` are persisted here.
+model LibraryItem {
+  id             String   @id @default(cuid())
+  /// Display name as it exists on disk (keeps Greek, spaces, dots).
+  name           String
+  /// URL-friendly slug derived from `name` (NFC-normalized).
+  slug           String
+  /// POSIX-style path relative to ARCHIVE_ROOT. Unique across the archive.
+  relativePath   String   @unique
+  /// Parent folder (null = direct child of ARCHIVE_ROOT).
+  parentId       String?
+  parent         LibraryItem?  @relation("LibraryItemTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children       LibraryItem[] @relation("LibraryItemTree")
+  /// Optional admin display parent. When hasAdminParentOverride=true, the UI
+  /// uses this instead of the physical parent without moving the source file.
+  adminParentId  String?
+  adminParent    LibraryItem?  @relation("LibraryItemAdminTree", fields: [adminParentId], references: [id], onDelete: SetNull)
+  adminChildren  LibraryItem[] @relation("LibraryItemAdminTree")
+  hasAdminParentOverride Boolean @default(false)
+  /// 'folder' | 'file'
+  itemType       String
+  /// For files: 'pdf' | 'doc' | 'docx' | 'dwg' | 'xlsx' | 'xls' | 'ppt' | 'pptx' | 'zip' | 'rar' | 'image' | 'video' | 'other'
+  /// For folders: null
+  fileType       String?
+  /// Size in bytes (null for folders). BigInt because the 1.1Θ ... .rar backup is ~2.8 GB.
+  size           BigInt?
+  modifiedAt     DateTime?
+  /// 0 = direct child of ARCHIVE_ROOT, 1 = child of a top-level group, ...
+  level          Int
+  /// For top-level groups only, e.g. '1.1', '1.15', '1.21'. Null otherwise.
+  libraryCode    String?
+  displayOrder   Int      @default(0)
+  /// If true, UI must offer download rather than inline preview (e.g. DWG).
+  isDownloadOnly Boolean  @default(false)
+  /// If true, the file may be downloaded by end users. Defaults to DWG-only.
+  /// Admin can toggle this on PDFs / Word files on a case-by-case basis.
+  isDownloadable Boolean  @default(false)
+  /// If false, the item is skipped by explorer APIs (e.g. .rar at root, noise files).
+  isBrowsable    Boolean  @default(true)
+  /// Homepage "introductory documents" cards surface isHighlighted=true files.
+  isHighlighted  Boolean  @default(false)
+  /// Hidden noise (desktop.ini, Thumbs.db, .dwl, .SV$, the 1.1Θ .rar backup).
+  /// Stored but never shown. Makes debugging indexing runs easier.
+  isHidden       Boolean  @default(false)
+  /// Admin soft-hide. Files stay on disk/cloud but disappear from guest views.
+  isAdminHidden  Boolean  @default(false)
+  /// Optional precomputed thumbnail served from /public or an object store.
+  thumbnailPath  String?
+  /// 'local' | 'onedrive_synced' | 'external_drive'
+  sourceType     String   @default("local")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  aiChunks       AiChunk[]
+
+  @@index([parentId])
+  @@index([adminParentId])
+  @@index([hasAdminParentOverride])
+  @@index([slug])
+  @@index([fileType])
+  @@index([isHighlighted])
+  @@index([isHidden])
+  @@index([isAdminHidden])
+  @@index([libraryCode])
+  @@index([isDownloadable])
+}
+
+/// One row per indexer run. The admin UI polls the latest row for progress.
+model IndexRun {
+  id            String    @id @default(cuid())
+  startedAt     DateTime  @default(now())
+  finishedAt    DateTime?
+  itemsScanned  Int       @default(0)
+  itemsCreated  Int       @default(0)
+  itemsUpdated  Int       @default(0)
+  itemsRemoved  Int       @default(0)
+  /// 'running' | 'success' | 'failed'
+  status        String    @default("running")
+  /// JSON-serialized array of error messages/paths (optional).
+  errors        String?
+  /// Which root the run scanned (ARCHIVE_ROOT at the time).
+  archiveRoot   String?
+}
+
+/// Free-form key/value store for small admin-tweakable settings.
+/// e.g. "homepage.highlightsOverride", "indexer.lastSuccessAt"
+model Config {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+/// A chunk of text extracted from a LibraryItem for AI retrieval.
+/// The matching 384-dim embedding lives in the `vec_ai_chunks` virtual table
+/// (managed via raw SQL — see the migration), keyed by `id`.
+model AiChunk {
+  id         String       @id @default(cuid())
+  itemId     String
+  item       LibraryItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  /// 1-indexed PDF page (null for docx / raw text).
+  page       Int?
+  chunkIndex Int
+  text       String
+  tokenCount Int          @default(0)
+  createdAt  DateTime     @default(now())
+
+  @@index([itemId])
+  @@index([itemId, page])
+}
+
+/// One row per AI indexing run (mirrors IndexRun for admin polling).
+model AiIndexRun {
+  id             String    @id @default(cuid())
+  startedAt      DateTime  @default(now())
+  finishedAt     DateTime?
+  itemsProcessed Int       @default(0)
+  chunksCreated  Int       @default(0)
+  /// 'running' | 'success' | 'failed' | 'skipped'
+  status         String    @default("running")
+  errors         String?
+}

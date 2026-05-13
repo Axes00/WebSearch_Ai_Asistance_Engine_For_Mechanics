@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f7f8fb;
+  --foreground: #0b1220;
+  --surface: #ffffff;
+  --border: #e5e9f2;
+  --accent: #0f2a5e;
+  --accent-2: #42a8c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a1020;
+    --foreground: #eef1f8;
+    --surface: #111a2e;
+    --border: #1f2a44;
+    --accent: #6a9bf0;
+    --accent-2: #7fc6dc;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border bg-white/90 dark:bg-ink-soft/90 border-steel-200 dark:border-steel-700 shadow-card transition-all;
+  }
+  .card-hover {
+    @apply hover:shadow-cardHover hover:-translate-y-0.5 hover:border-deepblue/30;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl bg-deepblue px-5 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-deepblue-dark hover:shadow-cardHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-accent;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 rounded-xl border border-steel-200 bg-white px-4 py-2.5 text-sm font-semibold text-steel-700 transition hover:border-deepblue/40 hover:text-deepblue dark:bg-ink-soft dark:border-steel-700 dark:text-steel-100;
+  }
+  .input-field {
+    @apply w-full rounded-xl border border-steel-200 bg-white px-4 py-3 text-sm text-ink placeholder:text-steel-400 shadow-sm focus:border-deepblue focus:outline-none focus:ring-2 focus:ring-deepblue/20 dark:bg-ink-soft dark:border-steel-700 dark:text-paper dark:placeholder:text-steel-500;
+  }
+  .section-heading {
+    @apply text-2xl font-semibold tracking-tight text-ink dark:text-paper md:text-3xl;
+  }
+  .section-subtle {
+    @apply text-sm text-steel-500 dark:text-steel-300;
+  }
+}
+
+/* Subtle grid background used on explorer pages */
+.explorer-bg {
+  background-color: var(--background);
+  background-image: linear-gradient(
+      rgba(15, 42, 94, 0.04) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(15, 42, 94, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Mammoth-rendered .docx body — keeps the engineering aesthetic. */
+.docx-body {
+  line-height: 1.65;
+  color: var(--foreground);
+  font-size: 0.95rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.docx-body * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.docx-body h1,
+.docx-body h2,
+.docx-body h3,
+.docx-body h4 {
+  color: var(--foreground);
+  font-weight: 600;
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  line-height: 1.25;
+}
+.docx-body h1 { font-size: 1.6rem; }
+.docx-body h2 { font-size: 1.35rem; }
+.docx-body h3 { font-size: 1.15rem; }
+.docx-body p { margin: 0.6em 0; }
+.docx-body img,
+.docx-body svg,
+.docx-body canvas,
+.docx-body video {
+  height: auto;
+  max-width: 100%;
+}
+.docx-body ul,
+.docx-body ol { padding-left: 1.4em; margin: 0.5em 0; }
+.docx-body table {
+  border-collapse: collapse;
+  margin: 0.75em 0;
+  max-width: 100%;
+  table-layout: fixed;
+  width: 100%;
+}
+.docx-body th,
+.docx-body td {
+  border: 1px solid var(--border);
+  padding: 0.4em 0.6em;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.docx-body mark[data-ai] {
+  background: rgba(66, 168, 199, 0.35);
+  border-radius: 3px;
+  padding: 0 2px;
+}

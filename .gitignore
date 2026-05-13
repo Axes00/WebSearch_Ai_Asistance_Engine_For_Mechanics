@@ -1,0 +1,52 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+Thumbs.db
+desktop.ini
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env
+.env
+.env*.local
+.env.production
+
+# prisma / sqlite
+/dev.db
+/dev.db-journal
+/prisma/dev.db
+/prisma/dev.db-journal
+/prisma/*.db
+/prisma/*.db-journal
+/prisma/cache/
+
+# typescript
+*.tsbuildinfo
+
+# IDE
+/.idea/
+/.vscode/
+/.cursor/
+
+# agent workspace
+/agent-tools/
+
+# local source media duplicates
+/iStock-121045480.jpg

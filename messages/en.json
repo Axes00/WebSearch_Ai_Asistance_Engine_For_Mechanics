@@ -1,0 +1,194 @@
+{
+  "common": {
+    "appName": "Mechanica",
+    "appTagline": "Technical Digital Library & Technical Legislation AI Tool",
+    "languageSwitcher": {
+      "label": "Language",
+      "el": "EL",
+      "en": "EN",
+      "greek": "Greek",
+      "english": "English"
+    },
+    "actions": {
+      "open": "Open",
+      "download": "Download",
+      "browse": "Browse Library",
+      "search": "Search",
+      "back": "Back",
+      "home": "Home",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "save": "Save",
+      "delete": "Delete",
+      "rename": "Rename",
+      "move": "Move",
+      "upload": "Upload",
+      "new_folder": "New folder"
+    },
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "empty": "Nothing to show here yet"
+  },
+  "home": {
+    "heroTitle": "TECHNICAL DIGITAL LIBRARY & TECHNICAL DIGITAL LEGISLATION AI TOOL",
+    "heroSubtitlePrimary": "FOR - ARCHITECTS, CIVIL ENGINEERS, ELECTRICAL ENGINEERS, MECHANICAL ENGINEERS",
+    "heroSubtitleSecondary": "",
+    "heroCta": "Browse / Search Library",
+    "highlights": {
+      "title": "Introductory Documents",
+      "subtitle": "Highlighted publications, brochures and background material.",
+      "viewAll": "View all"
+    }
+  },
+  "library": {
+    "title": "Library",
+    "groupsTitle": "Technical Library Groups",
+    "groupsSubtitle": "Navigate the archive as you would a real technical filing system.",
+    "searchPlaceholder": "Search this folder…",
+    "searchPlaceholderRoot": "Search library groups…",
+    "breadcrumbHome": "Home",
+    "breadcrumbLibrary": "Library",
+    "items": {
+      "folders": "Folders",
+      "files": "Files",
+      "count": "{count, plural, =0 {no items} one {# item} other {# items}}"
+    },
+    "empty": {
+      "title": "This folder is empty",
+      "subtitle": "No browsable items were found here."
+    }
+  },
+  "viewer": {
+    "back": "Back to folder",
+    "open": "Open in new tab",
+    "download": "Download",
+    "sizeLabel": "Size",
+    "modifiedLabel": "Modified",
+    "typeLabel": "Type",
+    "pathLabel": "Location",
+    "prev": "Previous",
+    "next": "Next",
+    "prevAria": "Go to previous file",
+    "nextAria": "Go to next file",
+    "downloadOnlyTitle": "This file can be downloaded",
+    "downloadOnlyDescription": "Inline preview is not available for this file type. Use the download button to save it to your computer.",
+    "downloadDisabledTitle": "Preview available, download disabled",
+    "downloadDisabledDescription": "The administrator has not enabled downloads for this file.",
+    "docTitle": "Word document",
+    "docDescription": "Preview is rendering below. For the full experience download the file.",
+    "docUnavailableTitle": "Preview unavailable",
+    "docUnavailableDescription": "This .doc file could not be converted (LibreOffice missing or conversion failed). Contact the administrator.",
+    "wordPreview": "Word preview",
+    "pdfFallbackTitle": "Unable to render this PDF inline",
+    "pdfFallbackDescription": "Your browser could not display the file. Use the download button to open it locally.",
+    "aiResultsTitle": "AI matches in this document",
+    "aiNoMatchesInDocument": "No matches in this document.",
+    "loadingPreview": "Loading preview…",
+    "previewFailed": "Could not render the preview."
+  },
+  "sidebar": {
+    "aiTitle": "AI Assistant",
+    "aiSubtitle": "Free local retrieval, no cloud calls.",
+    "aiPlaceholder": "Ask the library…",
+    "aiDescription": "Search the full text of the library. Ctrl+K to focus.",
+    "aiSearching": "Searching…",
+    "aiNoResults": "No results. Try rephrasing.",
+    "aiResultsHint": "Top matches, click to open at the relevant page.",
+    "aiIndexingNotice": "AI index is still building. Try again later.",
+    "aiPageBadge": "Page {page}",
+    "aiInDocumentToggle": "Only this document",
+    "aiOpen": "Open match"
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "Maintain the library index and curate the homepage.",
+    "tabs": {
+      "explorer": "Explorer",
+      "highlights": "Highlights",
+      "reindex": "Reindex",
+      "ai": "AI"
+    },
+    "reindex": {
+      "title": "Reindex archive",
+      "description": "Scan ARCHIVE_ROOT again and refresh the database. Safe to run anytime.",
+      "button": "Run indexer now",
+      "running": "Indexing…",
+      "lastRun": "Last run",
+      "status": {
+        "running": "Running",
+        "success": "Success",
+        "failed": "Failed"
+      },
+      "stats": {
+        "scanned": "Scanned",
+        "created": "Created",
+        "updated": "Updated",
+        "removed": "Removed",
+        "duration": "Duration"
+      }
+    },
+    "highlights": {
+      "title": "Homepage highlights",
+      "description": "Toggle which documents appear as introductory cards on the homepage.",
+      "emptyHint": "No items yet. Run the indexer to populate the library."
+    },
+    "explorer": {
+      "title": "Archive explorer",
+      "description": "Upload, move, delete, and toggle downloadability. Click a folder to enter it.",
+      "rootLabel": "Archive root",
+      "selectAll": "Select all",
+      "clearSelection": "Clear selection",
+      "selectedCount": "{count, plural, =0 {nothing selected} one {# item selected} other {# items selected}}",
+      "columnName": "Name",
+      "columnType": "Type",
+      "columnSize": "Size",
+      "columnDownloadable": "Downloadable",
+      "downloadableYes": "Yes",
+      "downloadableNo": "No",
+      "uploadHere": "Upload here",
+      "uploadDropHint": "Drag files here or click to choose",
+      "uploadInProgress": "Uploading…",
+      "uploadDone": "Upload complete",
+      "uploadFailed": "Upload failed",
+      "newFolderPrompt": "Folder name",
+      "deletePrompt": "Delete {count, plural, one {# item} other {# items}}? This cannot be undone.",
+      "movePrompt": "Choose a destination folder",
+      "toggleDownloadable": "Mark downloadable",
+      "untoggleDownloadable": "Remove downloadable",
+      "bulkMove": "Move…",
+      "bulkDelete": "Delete…",
+      "bulkHighlight": "Toggle highlight",
+      "pickFolder": "Pick destination",
+      "actionSuccess": "Done.",
+      "actionFailed": "Action failed."
+    },
+    "ai": {
+      "title": "AI index",
+      "description": "Rebuild the semantic index for PDF, DOC and DOCX files. Uses local free models only.",
+      "button": "Reindex AI",
+      "running": "Indexing AI…",
+      "lastRun": "Last AI run",
+      "stats": {
+        "items": "Documents",
+        "chunks": "Chunks",
+        "duration": "Duration"
+      }
+    }
+  },
+  "fileTypes": {
+    "pdf": "PDF document",
+    "doc": "Word document",
+    "docx": "Word document",
+    "xls": "Excel spreadsheet",
+    "xlsx": "Excel spreadsheet",
+    "ppt": "PowerPoint presentation",
+    "pptx": "PowerPoint presentation",
+    "dwg": "AutoCAD drawing",
+    "zip": "Archive",
+    "rar": "Archive",
+    "image": "Image",
+    "video": "Video",
+    "other": "File",
+    "folder": "Folder"
+  }
+}
