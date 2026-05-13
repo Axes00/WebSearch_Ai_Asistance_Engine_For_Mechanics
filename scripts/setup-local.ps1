@@ -37,6 +37,38 @@ function Require-Command {
   }
 }
 
+function Find-ArchiveRoot {
+  param([string] $RequestedPath)
+
+  if (Test-Path -LiteralPath $RequestedPath) {
+    return (Resolve-Path -LiteralPath $RequestedPath).Path
+  }
+
+  $parent = Split-Path -Parent $ProjectRoot
+  $candidates = @(
+    (Join-Path $ProjectRoot "TechnicalLibrary"),
+    (Join-Path $ProjectRoot "MecahnicaArchive"),
+    (Join-Path $ProjectRoot "MechanicaArchive"),
+    (Join-Path $parent "TechnicalLibrary"),
+    (Join-Path $parent "MecahnicaArchive"),
+    (Join-Path $parent "MechanicaArchive")
+  )
+
+  foreach ($drive in Get-PSDrive -PSProvider FileSystem) {
+    $candidates += (Join-Path $drive.Root "TechnicalLibrary")
+    $candidates += (Join-Path $drive.Root "MecahnicaArchive")
+    $candidates += (Join-Path $drive.Root "MechanicaArchive")
+  }
+
+  foreach ($candidate in $candidates | Select-Object -Unique) {
+    if (Test-Path -LiteralPath $candidate) {
+      return (Resolve-Path -LiteralPath $candidate).Path
+    }
+  }
+
+  return $null
+}
+
 Set-Location -LiteralPath $ProjectRoot
 
 Write-Step "Checking local tools"
@@ -49,15 +81,28 @@ Write-Note "Node: $nodeVersion"
 Write-Note "npm:  $npmVersion"
 
 Write-Step "Checking archive folder"
-if (-not (Test-Path -LiteralPath $ArchiveRoot)) {
+$requestedArchiveRoot = $ArchiveRoot
+$resolvedArchiveRoot = Find-ArchiveRoot -RequestedPath $ArchiveRoot
+
+if (-not $resolvedArchiveRoot) {
   Write-Host ""
   Write-Host "Archive folder was not found:" -ForegroundColor Yellow
-  Write-Host "  $ArchiveRoot" -ForegroundColor Yellow
+  Write-Host "  $requestedArchiveRoot" -ForegroundColor Yellow
   Write-Host ""
-  Write-Host "Create or copy the archive there first. Example:" -ForegroundColor Yellow
+  Write-Host "Create or copy the archive there first. Accepted easy names:" -ForegroundColor Yellow
+  Write-Host "  D:\TechnicalLibrary" -ForegroundColor Yellow
+  Write-Host "  TechnicalLibrary next to this project folder" -ForegroundColor Yellow
+  Write-Host "  MecahnicaArchive next to this project folder" -ForegroundColor Yellow
+  Write-Host ""
+  Write-Host "Junction example:" -ForegroundColor Yellow
   Write-Host '  cmd /c mklink /J "D:\TechnicalLibrary" "E:\1.1...archive folder..."' -ForegroundColor Yellow
   Write-Host ""
   throw "Missing archive folder."
+}
+
+$ArchiveRoot = $resolvedArchiveRoot
+if ($ArchiveRoot -ne $requestedArchiveRoot) {
+  Write-Note "Auto-detected archive path: $ArchiveRoot"
 }
 
 $topLevelCount = (Get-ChildItem -LiteralPath $ArchiveRoot -Force -ErrorAction Stop | Measure-Object).Count
