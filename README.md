@@ -27,6 +27,37 @@ manager, and local AI semantic search with in-document highlighting.
 
 ---
 
+## Quick setup for collaborators
+
+GitHub contains the app source code, not the 6-7 GB archive files. Give
+the collaborator the archive separately on USB, Drive, R2, or another
+shared folder.
+
+For the easiest Windows setup:
+
+1. Put the archive at `D:\TechnicalLibrary`, or create a junction from
+   `D:\TechnicalLibrary` to the real archive folder.
+2. Clone the GitHub repo.
+3. Double-click `Install-Mechanica.cmd`.
+
+The installer runs `npm install`, writes `.env.local` and `.env`, applies
+Prisma migrations, runs `npm run index`, runs `npm run index:ai`, creates
+a desktop shortcut named `Mechanica`, and opens the site.
+
+If the archive is somewhere else, run the setup manually:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup-local.ps1 -ArchiveRoot "G:\My Drive\MecahnicaArchive"
+```
+
+For a faster first setup without AI indexing:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup-local.ps1 -SkipAiIndex
+```
+
+---
+
 ## 2. Archive location strategy
 
 The application never stores the archive inside the repo. Instead it
