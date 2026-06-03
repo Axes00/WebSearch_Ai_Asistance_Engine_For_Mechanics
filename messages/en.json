@@ -106,7 +106,8 @@
       "explorer": "Explorer",
       "highlights": "Highlights",
       "reindex": "Reindex",
-      "ai": "AI"
+      "ai": "AI",
+      "requests": "Requests"
     },
     "reindex": {
       "title": "Reindex archive",

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/db";
 import { effectiveParentWhere, toDTO } from "@/lib/library";
+import { safeSearchText } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,12 @@ function strip(s: string) {
 }
 
 export async function GET(req: NextRequest) {
-  const q = (req.nextUrl.searchParams.get("q") ?? "").trim();
+  let q: string;
+  try {
+    q = safeSearchText(req.nextUrl.searchParams.get("q") ?? "", 200);
+  } catch (error) {
+    return NextResponse.json({ error: (error as Error).message }, { status: 400 });
+  }
   const parentIdRaw = req.nextUrl.searchParams.get("parentId");
   const limit = Math.min(
     Math.max(parseInt(req.nextUrl.searchParams.get("limit") ?? "200", 10) || 200, 1),

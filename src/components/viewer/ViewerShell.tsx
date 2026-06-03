@@ -68,7 +68,6 @@ export default function ViewerShell(props: {
     streamHref,
     officeHref,
     downloadHref,
-    canOpenInline,
     canDownload,
     libreAvailable,
     breadcrumbs,
@@ -173,8 +172,6 @@ export default function ViewerShell(props: {
             <ViewerNav prev={prev} next={next} />
             <FileActions
               downloadHref={downloadHref}
-              streamHref={streamHref}
-              canOpenInline={canOpenInline}
               canDownload={canDownload}
             />
           </div>

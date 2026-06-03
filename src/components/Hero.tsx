@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/lib/routing";
 
+import CustomerLogoutButton from "./CustomerLogoutButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 /**
@@ -14,7 +15,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
  * - overlay: deep blue gradient for readability.
  * - foreground: bilingual title, subtitle, CTA, top-right language switcher.
  */
-export default function Hero() {
+export default function Hero({ customerLoggedIn }: { customerLoggedIn: boolean }) {
   const t = useTranslations("home");
   const c = useTranslations("common");
   const locale = useLocale();
@@ -101,40 +102,33 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.34, ease: "easeOut" }}
           className="flex flex-wrap items-center gap-3"
         >
-          <Link
-            href="/library"
-            className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-deepblue-dark shadow-cardHover transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(10,30,71,0.35)]"
-          >
-            Main Page
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4"
-              aria-hidden
+          {customerLoggedIn ? (
+            <>
+              <Link
+                href="/library"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-deepblue-dark shadow-cardHover transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(10,30,71,0.35)]"
+              >
+                Main Page
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="h-4 w-4"
+                  aria-hidden
+                >
+                  <path d="M4 10a.75.75 0 0 1 .75-.75h8.69l-2.72-2.72a.75.75 0 1 1 1.06-1.06l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 1 1-1.06-1.06l2.72-2.72H4.75A.75.75 0 0 1 4 10Z" />
+                </svg>
+              </Link>
+              <CustomerLogoutButton surface="hero" />
+            </>
+          ) : (
+            <Link
+              href="/access"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/20"
             >
-              <path d="M4 10a.75.75 0 0 1 .75-.75h8.69l-2.72-2.72a.75.75 0 1 1 1.06-1.06l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 1 1-1.06-1.06l2.72-2.72H4.75A.75.75 0 0 1 4 10Z" />
-            </svg>
-          </Link>
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/20"
-          >
-            Admin Page
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4"
-              aria-hidden
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 1.75a4.25 4.25 0 0 0-4.25 4.25v1.25H4.5A1.75 1.75 0 0 0 2.75 9v7A1.75 1.75 0 0 0 4.5 17.75h11A1.75 1.75 0 0 0 17.25 16V9a1.75 1.75 0 0 0-1.75-1.75h-1.25V6A4.25 4.25 0 0 0 10 1.75ZM7.25 6a2.75 2.75 0 1 1 5.5 0v1.25h-5.5V6Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </Link>
+              Customer Access
+            </Link>
+          )}
         </motion.div>
       </div>
     </section>

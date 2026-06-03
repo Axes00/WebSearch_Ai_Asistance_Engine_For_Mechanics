@@ -142,3 +142,22 @@ model AiIndexRun {
   status         String    @default("running")
   errors         String?
 }
+
+/// Customer request for access to the private technical library.
+/// Login codes are stored as hashes only and are issued after admin approval.
+model AccessRequest {
+  id          String    @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  description String
+  /// 'pending' | 'approved' | 'rejected'
+  status      String    @default("pending")
+  codeHash    String?
+  requestedAt DateTime  @default(now())
+  approvedAt  DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+  @@index([requestedAt])
+}

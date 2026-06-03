@@ -114,12 +114,34 @@ $topLevelCount = (Get-ChildItem -LiteralPath $ArchiveRoot -Force -ErrorAction St
 Write-Note "Archive path exists with $topLevelCount top-level item(s)."
 
 Write-Step "Writing local environment files"
+$preservedEnvLines = @()
+if (Test-Path -LiteralPath $EnvLocalPath) {
+  $preservedNames = @(
+    "ACCESS_SESSION_SECRET",
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+    "TURNSTILE_SECRET_KEY",
+    "RESEND_API_KEY",
+    "RESEND_FROM_EMAIL",
+    "ADMIN_EMAIL",
+    "ADMIN_PASSWORD_HASH"
+  )
+  foreach ($name in $preservedNames) {
+    $line = Get-Content -LiteralPath $EnvLocalPath | Where-Object { $_ -match "^$name=" } | Select-Object -First 1
+    if ($line) {
+      $preservedEnvLines += $line
+    }
+  }
+}
+
 $envLocal = @"
 ARCHIVE_ROOT="$ArchiveRoot"
 ARCHIVE_SOURCE_TYPE=$ArchiveSourceType
 DATABASE_URL="file:./dev.db"
 DEFAULT_LOCALE=el
 "@
+if ($preservedEnvLines.Count -gt 0) {
+  $envLocal += "`r`n" + ($preservedEnvLines -join "`r`n")
+}
 
 $envPrisma = @"
 DATABASE_URL="file:./dev.db"
@@ -178,6 +200,19 @@ if (-not $SkipShortcut) {
   $shortcut.Save()
 
   Write-Note "Created $shortcutPath"
+
+  $adminShortcutPath = Join-Path $desktop "Mechanica Admin.lnk"
+  $adminLauncherPath = Join-Path $ProjectRoot "scripts\open-mechanica-admin.ps1"
+  $adminShortcut = $shell.CreateShortcut($adminShortcutPath)
+  $adminShortcut.TargetPath = "powershell.exe"
+  $adminShortcut.Arguments = "-ExecutionPolicy Bypass -File `"$adminLauncherPath`""
+  $adminShortcut.WorkingDirectory = $ProjectRoot
+  if (Test-Path -LiteralPath $iconPath) {
+    $adminShortcut.IconLocation = $iconPath
+  }
+  $adminShortcut.Save()
+
+  Write-Note "Created $adminShortcutPath"
 }
 
 Write-Step "Setup complete"

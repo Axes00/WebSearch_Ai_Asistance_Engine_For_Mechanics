@@ -127,7 +127,6 @@ export default async function ViewerPage({
                 <div className="mt-6">
                   <FileActions
                     downloadHref={downloadHref}
-                    canOpenInline={false}
                     canDownload={canDownload}
                   />
                 </div>
@@ -150,7 +149,6 @@ export default async function ViewerPage({
                 <div className="mt-6">
                   <FileActions
                     downloadHref={downloadHref}
-                    canOpenInline={false}
                     canDownload={canDownload}
                   />
                 </div>

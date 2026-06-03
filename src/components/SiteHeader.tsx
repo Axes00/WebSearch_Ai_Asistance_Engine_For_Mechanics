@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/lib/routing";
 import clsx from "clsx";
 
+import AdminSessionActions from "./admin/AdminSessionActions";
+import CustomerLogoutButton from "./CustomerLogoutButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 /**
@@ -16,11 +18,13 @@ import LanguageSwitcher from "./LanguageSwitcher";
  * Rendering is intentionally minimal; the homepage hero supplies its own
  * over-image language switcher and this top bar takes over everywhere else.
  */
-export default function SiteHeader() {
+export default function SiteHeader({ customerLoggedIn }: { customerLoggedIn: boolean }) {
   const t = useTranslations("common");
   const pathname = usePathname();
   // Homepage renders its own hero-embedded header; hide the global one there.
   const isHome = pathname === "/";
+  const isAdminPanel = pathname === "/admin";
+  const isAdmin = isAdminPanel || pathname === "/admin-login";
   if (isHome) return null;
 
   return (
@@ -32,7 +36,7 @@ export default function SiteHeader() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
         <Link
-          href="/"
+          href={isAdminPanel ? "/admin" : "/"}
           className="flex items-center gap-3 text-ink hover:text-deepblue dark:text-paper"
         >
           <Image
@@ -47,12 +51,8 @@ export default function SiteHeader() {
           </span>
         </Link>
         <nav className="flex items-center gap-3">
-          <Link href="/library" className="btn-secondary hidden md:inline-flex">
-            {t("actions.browse")}
-          </Link>
-          <Link href="/admin" className="btn-secondary hidden md:inline-flex">
-            Admin
-          </Link>
+          {isAdminPanel && <AdminSessionActions />}
+          {!isAdmin && customerLoggedIn && <CustomerLogoutButton />}
           <LanguageSwitcher surface="header" />
         </nav>
       </div>

@@ -1,7 +1,10 @@
 import { setRequestLocale } from "next-intl/server";
+import { cookies } from "next/headers";
 
 import Hero from "@/components/Hero";
 import HighlightedDocumentsRow from "@/components/HighlightedDocumentsRow";
+import { ACCESS_COOKIE } from "@/lib/access";
+import { hasCustomerAccess } from "@/lib/customerAccess";
 import { prisma } from "@/lib/db";
 import { toDTO } from "@/lib/library";
 
@@ -31,11 +34,14 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const highlights = await getHighlights();
+  const [highlights, customerLoggedIn] = await Promise.all([
+    getHighlights(),
+    cookies().then((store) => hasCustomerAccess(store.get(ACCESS_COOKIE)?.value)),
+  ]);
 
   return (
     <>
-      <Hero />
+      <Hero customerLoggedIn={customerLoggedIn} />
       <HighlightedDocumentsRow items={highlights} locale={locale} />
     </>
   );

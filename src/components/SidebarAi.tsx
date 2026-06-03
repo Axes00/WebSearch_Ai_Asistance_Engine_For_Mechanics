@@ -32,20 +32,23 @@ export type SidebarAiHit = {
 };
 
 const QUICK_SEARCHES = [
-  { label: "Νομοθεσία", query: "νομοθεσία νόμος ΦΕΚ κανονισμός" },
-  { label: "Πρότυπα", query: "πρότυπα ΕΛΟΤ τεχνικές προδιαγραφές" },
+  { labelEl: "Νομοθεσία", labelEn: "Legislation", query: "νομοθεσία νόμος ΦΕΚ κανονισμός" },
+  { labelEl: "Πρότυπα", labelEn: "Standards", query: "πρότυπα ΕΛΟΤ τεχνικές προδιαγραφές" },
   {
-    label: "Έντυπα / Πρωτόκολλα",
+    labelEl: "Έντυπα / Πρωτόκολλα",
+    labelEn: "Forms / Protocols",
     query: "έντυπα πρωτόκολλο έλεγχος υπεύθυνη δήλωση",
   },
   {
-    label: "Δημόσια Έργα",
+    labelEl: "Δημόσια Έργα",
+    labelEn: "Public Works",
     query: "δημόσια έργα Ν 4412 συμβάσεις τεχνικά έργα",
   },
-  { label: "ΚΕΝΑΚ / Ενέργεια", query: "ΚΕΝΑΚ ενεργειακή απόδοση κτιρίων" },
-  { label: "Ηλεκτρολογικά", query: "ΕΛΟΤ HD 384 ΚΕΗΕ ηλεκτρική εγκατάσταση" },
+  { labelEl: "ΚΕΝΑΚ / Ενέργεια", labelEn: "KENAK / Energy", query: "ΚΕΝΑΚ ενεργειακή απόδοση κτιρίων" },
+  { labelEl: "Ηλεκτρολογικά", labelEn: "Electrical", query: "ΕΛΟΤ HD 384 ΚΕΗΕ ηλεκτρική εγκατάσταση" },
   {
-    label: "Πυρασφάλεια",
+    labelEl: "Πυρασφάλεια",
+    labelEn: "Fire Safety",
     query: "πυρασφάλεια πυροπροστασία πυροσβεστική διάταξη",
   },
 ];
@@ -80,6 +83,7 @@ export default function SidebarAi({
   layout?: "sidebar" | "inline";
 }) {
   const t = useTranslations("sidebar");
+  const isGreek = locale === "el";
   const [query, setQuery] = useState(initialQuery ?? "");
   const [scopeToDoc, setScopeToDoc] = useState(false);
   const [hits, setHits] = useState<SidebarAiHit[]>([]);
@@ -284,19 +288,20 @@ export default function SidebarAi({
       </p>
 
       <p className="mt-3 text-xs font-semibold leading-relaxed text-steel-600 dark:text-steel-200">
-        Δοκιμάστε θέμα, νόμο, πρότυπο ή χρήση: π.χ. ΚΕΝΑΚ, Ν.4412, ΕΛΟΤ HD
-        384.
+        {isGreek
+          ? "Δοκιμάστε θέμα, νόμο, πρότυπο ή χρήση: π.χ. ΚΕΝΑΚ, Ν.4412, ΕΛΟΤ HD 384."
+          : "Try a topic, law, standard, or use case: e.g. KENAK, Law 4412, ELOT HD 384."}
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {QUICK_SEARCHES.map((chip) => (
           <button
-            key={chip.label}
+            key={chip.labelEn}
             type="button"
             onClick={() => runQuickSearch(chip.query)}
             className="rounded-full border border-steel-200/80 bg-white/70 px-3 py-1.5 text-[11px] font-semibold text-steel-700 transition hover:border-cyan-accent/60 hover:text-deepblue dark:border-white/10 dark:bg-white/5 dark:text-steel-200 dark:hover:bg-white/10"
           >
-            {chip.label}
+            {isGreek ? chip.labelEl : chip.labelEn}
           </button>
         ))}
       </div>

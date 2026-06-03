@@ -160,6 +160,30 @@ export default function AdminExplorer() {
     }
   }
 
+  async function permanentlyDeleteSelected() {
+    if (selected.size === 0) return;
+    const confirmation = window.prompt(
+      adminCopy(locale).permanentDeletePrompt(selected.size)
+    );
+    if (confirmation !== "DELETE") return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/admin/permanent-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selected), confirm: "DELETE" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || JSON.stringify(data.errors));
+      setToast({ kind: "success", msg: t("actionSuccess") });
+      await fetchFolder(parentId);
+    } catch (err) {
+      setToast({ kind: "error", msg: `${t("actionFailed")}: ${(err as Error).message}` });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function setVisibleBulk(visible: boolean) {
     if (selected.size === 0) return;
     setBusy(true);
@@ -274,6 +298,7 @@ export default function AdminExplorer() {
           onUpload={uploadFiles}
           onNewFolder={createFolder}
           onDeleteSelected={deleteSelected}
+          onPermanentlyDeleteSelected={permanentlyDeleteSelected}
           onShowSelected={() => setVisibleBulk(true)}
           onMoveSelected={() => setMovePickerOpen(true)}
           onSetDownloadable={setDownloadableBulk}
@@ -286,6 +311,7 @@ export default function AdminExplorer() {
             move: t("bulkMove"),
             show: adminCopy(locale).show,
             del: adminCopy(locale).hide,
+            permanentDelete: adminCopy(locale).permanentDelete,
             selectedCount: (n: number) => t("selectedCount", { count: n }),
           }}
         />
@@ -419,6 +445,7 @@ function adminCopy(locale: string) {
   const isGreek = locale === "el";
   return {
     hide: isGreek ? "Απόκρυψη" : "Hide",
+    permanentDelete: isGreek ? "Διαγραφή" : "Delete",
     show: isGreek ? "Εμφάνιση" : "Show",
     hidden: isGreek ? "Κρυφό από guest" : "Hidden from guests",
     virtualMove: isGreek ? "Virtual θέση" : "Virtual location",
@@ -426,6 +453,10 @@ function adminCopy(locale: string) {
       isGreek
         ? `Να κρυφτούν ${count} επιλεγμένα από τη δημόσια βιβλιοθήκη; Τα αρχεία δεν θα διαγραφούν.`
         : `Hide ${count} selected item(s) from the public library? Files will not be deleted.`,
+    permanentDeletePrompt: (count: number) =>
+      isGreek
+        ? `ΜΟΝΙΜΗ ΔΙΑΓΡΑΦΗ ${count} επιλεγμένων στοιχείων από το archive. Η ενέργεια δεν αναιρείται. Πληκτρολογήστε DELETE για επιβεβαίωση:`
+        : `PERMANENTLY DELETE ${count} selected archive item(s). This cannot be undone. Type DELETE to confirm:`,
   };
 }
 
@@ -669,6 +700,7 @@ function Toolbar({
   onUpload,
   onNewFolder,
   onDeleteSelected,
+  onPermanentlyDeleteSelected,
   onShowSelected,
   onMoveSelected,
   onSetDownloadable,
@@ -679,6 +711,7 @@ function Toolbar({
   onUpload: (files: FileList) => void;
   onNewFolder: () => void;
   onDeleteSelected: () => void;
+  onPermanentlyDeleteSelected: () => void;
   onShowSelected: () => void;
   onMoveSelected: () => void;
   onSetDownloadable: (value: boolean) => void;
@@ -690,6 +723,7 @@ function Toolbar({
     move: string;
     show: string;
     del: string;
+    permanentDelete: string;
     selectedCount: (n: number) => string;
   };
 }) {
@@ -699,7 +733,7 @@ function Toolbar({
   const dangerButtonClass =
     "inline-flex min-h-11 min-w-[10.5rem] items-center justify-center gap-2 rounded-xl border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-40";
   return (
-    <div className="mb-4 grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
+    <div className="mb-4 flex flex-wrap items-center gap-2">
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -731,7 +765,7 @@ function Toolbar({
           {labels.selectedCount(selectedCount)}
         </span>
       </div>
-      <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           className={buttonClass}
@@ -771,6 +805,14 @@ function Toolbar({
           onClick={onDeleteSelected}
         >
           {labels.del}
+        </button>
+        <button
+          type="button"
+          className={dangerButtonClass}
+          disabled={disabled || !hasSelection}
+          onClick={onPermanentlyDeleteSelected}
+        >
+          {labels.permanentDelete}
         </button>
       </div>
     </div>

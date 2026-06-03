@@ -4,13 +4,9 @@ import { useTranslations } from "next-intl";
 
 export default function FileActions({
   downloadHref,
-  streamHref,
-  canOpenInline,
   canDownload = true,
 }: {
   downloadHref: string;
-  streamHref?: string;
-  canOpenInline?: boolean;
   canDownload?: boolean;
 }) {
   const t = useTranslations("viewer");
@@ -33,16 +29,6 @@ export default function FileActions({
             />
           </svg>
           {t("download")}
-        </a>
-      )}
-      {canOpenInline && streamHref && (
-        <a
-          href={streamHref}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="btn-secondary"
-        >
-          {t("open")}
         </a>
       )}
     </div>

@@ -2,12 +2,20 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { runAiSearch } from "@/lib/ai/search";
+import { safeSearchText } from "@/lib/security";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const BodySchema = z.object({
-  q: z.string().min(1).max(500),
+  q: z.string().min(1).max(500).transform((value, ctx) => {
+    try {
+      return safeSearchText(value, 500);
+    } catch (error) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: (error as Error).message });
+      return z.NEVER;
+    }
+  }),
   limit: z.number().int().positive().max(30).optional(),
   itemId: z.string().min(1).max(100).optional(),
 });

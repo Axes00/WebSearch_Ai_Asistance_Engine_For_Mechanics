@@ -7,8 +7,9 @@ import AdminExplorer from "./AdminExplorer";
 import AdminHighlightsPanel from "./AdminHighlightsPanel";
 import AdminReindexPanel from "./AdminReindexPanel";
 import AdminAiPanel from "./AdminAiPanel";
+import AdminRequestsPanel from "./AdminRequestsPanel";
 
-type TabKey = "explorer" | "highlights" | "reindex" | "ai";
+type TabKey = "explorer" | "highlights" | "reindex" | "ai" | "requests";
 
 export default function AdminTabs() {
   const t = useTranslations("admin.tabs");
@@ -20,6 +21,7 @@ export default function AdminTabs() {
     { key: "highlights", label: tc("search") },
     { key: "reindex", label: t("reindex") },
     { key: "ai", label: t("ai") },
+    { key: "requests", label: t("requests") },
   ];
 
   return (
@@ -50,6 +52,7 @@ export default function AdminTabs() {
       {tab === "highlights" && <AdminHighlightsPanel />}
       {tab === "reindex" && <AdminReindexPanel />}
       {tab === "ai" && <AdminAiPanel />}
+      {tab === "requests" && <AdminRequestsPanel />}
     </div>
   );
 }

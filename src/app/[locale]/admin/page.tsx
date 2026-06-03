@@ -2,16 +2,6 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import AdminTabs from "@/components/admin/AdminTabs";
 
-/**
- * /[locale]/admin
- *
- * TODO (auth, v3):
- *   - Protect this route and every /api/admin/* endpoint with a middleware
- *     guard (env-based password, or NextAuth credentials once user
- *     management is required).
- *   - Until then, the page is reachable without credentials. The README
- *     documents this caveat explicitly; run behind localhost only.
- */
 export default async function AdminPage({
   params,
 }: {
