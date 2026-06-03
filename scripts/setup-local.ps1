@@ -1,10 +1,11 @@
 param(
-  [string] $ArchiveRoot = "D:\TechnicalLibrary",
+  [string] $ArchiveRoot = "",
   [string] $ArchiveSourceType = "local",
   [switch] $SkipInstall,
   [switch] $SkipMigrate,
   [switch] $SkipIndex,
   [switch] $SkipAiIndex,
+  [switch] $SkipArchiveVerify,
   [switch] $SkipShortcut,
   [switch] $StartDevServer
 )
@@ -40,7 +41,7 @@ function Require-Command {
 function Find-ArchiveRoot {
   param([string] $RequestedPath)
 
-  if (Test-Path -LiteralPath $RequestedPath) {
+  if ($RequestedPath -and (Test-Path -LiteralPath $RequestedPath)) {
     return (Resolve-Path -LiteralPath $RequestedPath).Path
   }
 
@@ -58,6 +59,9 @@ function Find-ArchiveRoot {
     $candidates += (Join-Path $drive.Root "TechnicalLibrary")
     $candidates += (Join-Path $drive.Root "MecahnicaArchive")
     $candidates += (Join-Path $drive.Root "MechanicaArchive")
+    $candidates += (Join-Path $drive.Root "My Drive\MecahnicaArchive")
+    $candidates += (Join-Path $drive.Root "My Drive\MechanicaArchive")
+    $candidates += (Join-Path $drive.Root "Other computers\USB and External Devices\EMTEC B250\1.1Θ  ΤΕΧΝΙΚΟΣ  Η-Μ   ΟΔΗΓΟΣ ................................. Κ400 - 2022")
   }
 
   foreach ($candidate in $candidates | Select-Object -Unique) {
@@ -90,6 +94,7 @@ if (-not $resolvedArchiveRoot) {
   Write-Host "  $requestedArchiveRoot" -ForegroundColor Yellow
   Write-Host ""
   Write-Host "Create or copy the archive there first. Accepted easy names:" -ForegroundColor Yellow
+  Write-Host "  G:\Other computers\USB and External Devices\EMTEC B250\1.1Θ  ΤΕΧΝΙΚΟΣ  Η-Μ   ΟΔΗΓΟΣ ................................. Κ400 - 2022" -ForegroundColor Yellow
   Write-Host "  D:\TechnicalLibrary" -ForegroundColor Yellow
   Write-Host "  TechnicalLibrary next to this project folder" -ForegroundColor Yellow
   Write-Host "  MecahnicaArchive next to this project folder" -ForegroundColor Yellow
@@ -101,7 +106,7 @@ if (-not $resolvedArchiveRoot) {
 }
 
 $ArchiveRoot = $resolvedArchiveRoot
-if ($ArchiveRoot -ne $requestedArchiveRoot) {
+if (-not $requestedArchiveRoot -or $ArchiveRoot -ne $requestedArchiveRoot) {
   Write-Note "Auto-detected archive path: $ArchiveRoot"
 }
 
@@ -128,6 +133,16 @@ Write-Note "Wrote .env"
 if (-not $SkipInstall) {
   Write-Step "Installing npm packages"
   npm install
+}
+
+if (-not $SkipArchiveVerify) {
+  $blueprintPath = Join-Path $ProjectRoot "archive-blueprint-usb.json"
+  if (Test-Path -LiteralPath $blueprintPath) {
+    Write-Step "Verifying archive structure"
+    npm run archive:verify -- --blueprint archive-blueprint-usb.json --source "$ArchiveRoot"
+  } else {
+    Write-Note "archive-blueprint-usb.json was not found; skipping archive verification."
+  }
 }
 
 if (-not $SkipMigrate) {
