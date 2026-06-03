@@ -13,6 +13,8 @@
     "lint": "next lint",
     "index": "tsx scripts/index-archive.ts",
     "index:ai": "node scripts/ensure-better-sqlite3.cjs && tsx scripts/index-ai.ts",
+    "archive:blueprint:fs": "tsx scripts/export-archive-filesystem-blueprint.ts",
+    "archive:verify": "tsx scripts/verify-archive-blueprint.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
