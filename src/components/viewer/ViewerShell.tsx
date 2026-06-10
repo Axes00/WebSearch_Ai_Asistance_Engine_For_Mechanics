@@ -73,6 +73,7 @@ export default function ViewerShell(props: {
     breadcrumbs,
     prev,
     next,
+    canOpenInline,
   } = current;
 
   // If the URL contains #page=N, respect that on first paint so deep-links
@@ -180,7 +181,8 @@ export default function ViewerShell(props: {
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_320px]">
         <div>
-          {kind === "pdf" && (
+          {!canOpenInline && fallbackNode}
+          {canOpenInline && kind === "pdf" && (
             <PdfViewer
               key={pdfSrc}
               src={pdfSrc}
@@ -188,7 +190,7 @@ export default function ViewerShell(props: {
               title={displayName}
             />
           )}
-          {kind === "image" && (
+          {canOpenInline && kind === "image" && (
             <div className="card overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -198,7 +200,7 @@ export default function ViewerShell(props: {
               />
             </div>
           )}
-          {kind === "docx" && (
+          {canOpenInline && kind === "docx" && (
             <DocxViewer
               key={item.id}
               streamHref={streamHref}
@@ -206,7 +208,7 @@ export default function ViewerShell(props: {
               highlightTerms={highlightTerms}
             />
           )}
-          {kind === "doc" && libreAvailable && (
+          {canOpenInline && kind === "doc" && libreAvailable && (
             <PdfViewer
               key={pdfSrc}
               src={pdfSrc}
@@ -214,8 +216,8 @@ export default function ViewerShell(props: {
               title={displayName}
             />
           )}
-          {kind === "doc" && !libreAvailable && unavailableDocNode}
-          {kind === "other" && fallbackNode}
+          {canOpenInline && kind === "doc" && !libreAvailable && unavailableDocNode}
+          {canOpenInline && kind === "other" && fallbackNode}
         </div>
 
         <div className="hidden xl:block">

@@ -26,6 +26,17 @@ export async function POST(req: Request) {
   }
 
   try {
+    const running = await prisma.aiIndexRun.findFirst({
+      where: { status: "running" },
+      orderBy: { startedAt: "desc" },
+    });
+    if (running) {
+      return NextResponse.json(
+        { error: "AI indexing is already running", run: running },
+        { status: 409 }
+      );
+    }
+
     const res = await runAiIngest({ verbose: false, force });
     const run = await prisma.aiIndexRun.findUnique({ where: { id: res.runId } });
     return NextResponse.json({ run });
@@ -43,4 +54,28 @@ export async function GET() {
     orderBy: { startedAt: "desc" },
   });
   return NextResponse.json({ run });
+}
+
+/** DELETE — mark the latest running AiIndexRun as stopped. */
+export async function DELETE() {
+  const running = await prisma.aiIndexRun.findFirst({
+    where: { status: "running" },
+    orderBy: { startedAt: "desc" },
+  });
+  if (!running) {
+    const run = await prisma.aiIndexRun.findFirst({
+      orderBy: { startedAt: "desc" },
+    });
+    return NextResponse.json({ run, stopped: false });
+  }
+
+  const run = await prisma.aiIndexRun.update({
+    where: { id: running.id },
+    data: {
+      status: "skipped",
+      finishedAt: new Date(),
+      errors: JSON.stringify(["AI indexing was stopped by the administrator."]),
+    },
+  });
+  return NextResponse.json({ run, stopped: true });
 }

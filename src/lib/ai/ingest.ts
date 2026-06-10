@@ -16,7 +16,7 @@ const BATCH_SIZE = 32;
 
 export type AiIngestResult = {
   runId: string;
-  status: "success" | "failed";
+  status: "success" | "failed" | "skipped";
   itemsProcessed: number;
   chunksCreated: number;
   durationMs: number;
@@ -110,7 +110,25 @@ export async function runAiIngest(options: {
   let chunksCreated = 0;
   const errors: string[] = [];
 
+  async function cancellationRequested() {
+    const latest = await prisma.aiIndexRun.findUnique({
+      where: { id: run.id },
+      select: { status: true },
+    });
+    return latest?.status === "skipped";
+  }
+
   const vectorBackfill = await backfillMissingVectors({ verbose: options.verbose });
+  if (await cancellationRequested()) {
+    return {
+      runId: run.id,
+      status: "skipped",
+      itemsProcessed,
+      chunksCreated,
+      durationMs: Date.now() - start,
+      errors: ["AI indexing was stopped by the administrator."],
+    };
+  }
   itemsProcessed += vectorBackfill.itemsProcessed;
   chunksCreated += vectorBackfill.chunksCreated;
   errors.push(...vectorBackfill.errors);
@@ -122,6 +140,26 @@ export async function runAiIngest(options: {
   }
 
   for (const item of candidates) {
+    if (await cancellationRequested()) {
+      await prisma.aiIndexRun.update({
+        where: { id: run.id },
+        data: {
+          finishedAt: new Date(),
+          status: "skipped",
+          itemsProcessed,
+          chunksCreated,
+          errors: JSON.stringify(["AI indexing was stopped by the administrator."]),
+        },
+      });
+      return {
+        runId: run.id,
+        status: "skipped",
+        itemsProcessed,
+        chunksCreated,
+        durationMs: Date.now() - start,
+        errors: ["AI indexing was stopped by the administrator."],
+      };
+    }
     const hasChunks = (countsByItem.get(item.id) ?? 0) > 0;
     const isStale =
       sinceTime === null ||

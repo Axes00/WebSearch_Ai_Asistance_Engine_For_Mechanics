@@ -17,6 +17,7 @@ export default function AdminAiPanel() {
   const t = useTranslations("admin.ai");
   const [run, setRun] = useState<AiRun | null>(null);
   const [busy, setBusy] = useState(false);
+  const [stopping, setStopping] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLatest = useCallback(async () => {
@@ -54,6 +55,24 @@ export default function AdminAiPanel() {
     }
   }
 
+  async function stopRun() {
+    setStopping(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/reindex-ai", { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      setRun(data.run);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setStopping(false);
+    }
+  }
+
   const statusColor =
     run?.status === "success"
       ? "text-green-600"
@@ -72,14 +91,26 @@ export default function AdminAiPanel() {
             {t("description")}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={startRun}
-          disabled={busy}
-          className="btn-primary"
-        >
-          {busy ? t("running") : t("button")}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          {run?.status === "running" && (
+            <button
+              type="button"
+              onClick={stopRun}
+              disabled={stopping}
+              className="rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/30"
+            >
+              {stopping ? t("stopping") : t("stop")}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={startRun}
+            disabled={busy || run?.status === "running"}
+            className="btn-primary"
+          >
+            {busy ? t("running") : t("button")}
+          </button>
+        </div>
       </div>
 
       {error && (

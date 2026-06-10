@@ -72,8 +72,8 @@
     "nextAria": "Go to next file",
     "downloadOnlyTitle": "This file can be downloaded",
     "downloadOnlyDescription": "Inline preview is not available for this file type. Use the download button to save it to your computer.",
-    "downloadDisabledTitle": "Preview available, download disabled",
-    "downloadDisabledDescription": "The administrator has not enabled downloads for this file.",
+    "downloadDisabledTitle": "Preview and download disabled",
+    "downloadDisabledDescription": "The administrator has not enabled downloads for this file, so the raw file is not sent to the browser.",
     "docTitle": "Word document",
     "docDescription": "Preview is rendering below. For the full experience download the file.",
     "docUnavailableTitle": "Preview unavailable",
@@ -173,7 +173,9 @@
         "items": "Documents",
         "chunks": "Chunks",
         "duration": "Duration"
-      }
+      },
+      "stop": "Stop AI",
+      "stopping": "Stopping..."
     }
   },
   "fileTypes": {

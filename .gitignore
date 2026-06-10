@@ -47,6 +47,7 @@ yarn-error.log*
 
 # agent workspace
 /agent-tools/
+/reports/
 
 # local source media duplicates
 /iStock-121045480.jpg

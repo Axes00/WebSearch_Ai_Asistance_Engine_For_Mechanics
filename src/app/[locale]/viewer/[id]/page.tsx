@@ -48,8 +48,8 @@ export default async function ViewerPage({
   const isDocx = dto.fileType === "docx";
   const isDoc = dto.fileType === "doc";
   const isImage = dto.fileType === "image";
-  const canOpenInline = isPdf || isImage || isDocx || isDoc;
   const canDownload = dto.isDownloadable === true;
+  const canOpenInline = canDownload && (isPdf || isImage || isDocx || isDoc);
   // .doc files need LibreOffice on the server to preview. We check once per
   // render so the UI can show a helpful message when it's missing.
   const libreAvailable = isDoc ? await isLibreOfficeAvailable() : true;

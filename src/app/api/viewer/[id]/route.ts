@@ -42,7 +42,8 @@ export async function GET(
       ? "image"
       : "other";
   const canOpenInline =
-    kind === "pdf" || kind === "image" || kind === "docx" || kind === "doc";
+    dto.isDownloadable === true &&
+    (kind === "pdf" || kind === "image" || kind === "docx" || kind === "doc");
 
   const siblings = await prisma.libraryItem.findMany({
     where: {
