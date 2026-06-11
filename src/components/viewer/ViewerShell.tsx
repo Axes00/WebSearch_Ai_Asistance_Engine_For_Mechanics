@@ -7,7 +7,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import DocxViewer from "@/components/DocxViewer";
 import FileActions from "@/components/FileActions";
 import FileIcon from "@/components/FileIcon";
-import PdfCanvasViewer from "@/components/PdfCanvasViewer";
+import PdfImagePreview from "@/components/PdfImagePreview";
 import PdfViewer from "@/components/PdfViewer";
 import SidebarAi, { type SidebarAiHit } from "@/components/SidebarAi";
 import ViewerNav, { type ViewerSibling } from "@/components/ViewerNav";
@@ -147,6 +147,8 @@ export default function ViewerShell(props: {
     return `${base}#${hash}${key}`;
   }, [kind, officeHref, streamHref, pdfPage]);
 
+  const previewHref = `/api/files/preview/${item.id}`;
+
   return (
     <div
       onContextMenu={(event) => event.preventDefault()}
@@ -210,9 +212,9 @@ export default function ViewerShell(props: {
                 title={displayName}
               />
             ) : (
-              <PdfCanvasViewer
+              <PdfImagePreview
                 key={pdfSrc}
-                src={pdfSrc}
+                manifestHref={previewHref}
                 title={displayName}
               />
             )
@@ -245,9 +247,9 @@ export default function ViewerShell(props: {
                 title={displayName}
               />
             ) : (
-              <PdfCanvasViewer
+              <PdfImagePreview
                 key={pdfSrc}
-                src={pdfSrc}
+                manifestHref={previewHref}
                 title={displayName}
               />
             )

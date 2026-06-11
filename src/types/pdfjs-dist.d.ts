@@ -1,10 +1,7 @@
-declare module "pdfjs-dist/build/pdf.mjs" {
-  export const GlobalWorkerOptions: {
-    workerSrc: string;
-  };
-
+declare module "pdfjs-dist/legacy/build/pdf.mjs" {
   export function getDocument(options: {
-    data: ArrayBuffer;
+    data: Uint8Array;
+    disableWorker?: boolean;
   }): {
     promise: Promise<{
       numPages: number;
@@ -14,7 +11,7 @@ declare module "pdfjs-dist/build/pdf.mjs" {
           height: number;
         };
         render(options: {
-          canvasContext: CanvasRenderingContext2D;
+          canvasContext: unknown;
           viewport: { width: number; height: number };
         }): { promise: Promise<void> };
       }>;
@@ -22,7 +19,18 @@ declare module "pdfjs-dist/build/pdf.mjs" {
   };
 }
 
-declare module "pdfjs-dist/build/pdf.worker.mjs" {
-  const workerSrc: string;
-  export default workerSrc;
+declare module "pdf-poppler" {
+  const pdfPoppler: {
+    info(file: string): Promise<{ pages?: string | number }>;
+    convert(
+      file: string,
+      options: {
+        format: "png" | "jpeg" | "tiff";
+        out_dir: string;
+        out_prefix: string;
+        page: number | null;
+      }
+    ): Promise<void>;
+  };
+  export default pdfPoppler;
 }
