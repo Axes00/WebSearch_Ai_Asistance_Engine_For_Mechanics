@@ -7,6 +7,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import DocxViewer from "@/components/DocxViewer";
 import FileActions from "@/components/FileActions";
 import FileIcon from "@/components/FileIcon";
+import PdfCanvasViewer from "@/components/PdfCanvasViewer";
 import PdfViewer from "@/components/PdfViewer";
 import SidebarAi, { type SidebarAiHit } from "@/components/SidebarAi";
 import ViewerNav, { type ViewerSibling } from "@/components/ViewerNav";
@@ -84,6 +85,21 @@ export default function ViewerShell(props: {
     if (match) setPdfPage(Number(match[1]));
   }, []);
 
+  useEffect(() => {
+    function blockSaveAndPrint(event: KeyboardEvent) {
+      const key = event.key.toLowerCase();
+      if ((event.ctrlKey || event.metaKey) && (key === "s" || key === "p")) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+
+    window.addEventListener("keydown", blockSaveAndPrint, { capture: true });
+    return () => {
+      window.removeEventListener("keydown", blockSaveAndPrint, { capture: true });
+    };
+  }, []);
+
   function handleHit(hit: SidebarAiHit) {
     if (hit.itemId !== item.id) return;
     if (kind === "docx") {
@@ -132,7 +148,10 @@ export default function ViewerShell(props: {
   }, [kind, officeHref, streamHref, pdfPage]);
 
   return (
-    <>
+    <div
+      onContextMenu={(event) => event.preventDefault()}
+      onDragStart={(event) => event.preventDefault()}
+    >
       <div className="mb-6 flex flex-col gap-3">
         <Breadcrumbs items={breadcrumbs} />
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -183,12 +202,20 @@ export default function ViewerShell(props: {
         <div>
           {!canOpenInline && fallbackNode}
           {canOpenInline && kind === "pdf" && (
-            <PdfViewer
-              key={pdfSrc}
-              src={pdfSrc}
-              downloadHref={canDownload ? downloadHref : undefined}
-              title={displayName}
-            />
+            canDownload ? (
+              <PdfViewer
+                key={pdfSrc}
+                src={pdfSrc}
+                downloadHref={downloadHref}
+                title={displayName}
+              />
+            ) : (
+              <PdfCanvasViewer
+                key={pdfSrc}
+                src={pdfSrc}
+                title={displayName}
+              />
+            )
           )}
           {canOpenInline && kind === "image" && (
             <div className="card overflow-hidden">
@@ -196,6 +223,7 @@ export default function ViewerShell(props: {
               <img
                 src={streamHref}
                 alt={displayName}
+                draggable={false}
                 className="mx-auto max-h-[84vh] w-full max-w-full object-contain"
               />
             </div>
@@ -209,12 +237,20 @@ export default function ViewerShell(props: {
             />
           )}
           {canOpenInline && kind === "doc" && libreAvailable && (
-            <PdfViewer
-              key={pdfSrc}
-              src={pdfSrc}
-              downloadHref={canDownload ? downloadHref : undefined}
-              title={displayName}
-            />
+            canDownload ? (
+              <PdfViewer
+                key={pdfSrc}
+                src={pdfSrc}
+                downloadHref={downloadHref}
+                title={displayName}
+              />
+            ) : (
+              <PdfCanvasViewer
+                key={pdfSrc}
+                src={pdfSrc}
+                title={displayName}
+              />
+            )
           )}
           {canOpenInline && kind === "doc" && !libreAvailable && unavailableDocNode}
           {canOpenInline && kind === "other" && fallbackNode}
@@ -230,6 +266,6 @@ export default function ViewerShell(props: {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -35,13 +35,6 @@ export async function GET(
   ) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (!item.isDownloadable) {
-    return NextResponse.json(
-      { error: "Preview and downloads are disabled for this file" },
-      { status: 403 }
-    );
-  }
-
   let abs: string;
   try {
     abs = resolveItemPath(item.relativePath);
